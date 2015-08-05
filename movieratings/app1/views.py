@@ -37,5 +37,7 @@ def detail_movie(request, movie_id):
 
 def detail_rater(request, rater_id):
     rater = Rater.objects.get(pk=rater_id)
+    ratings_list = rater.get_rating_list()
 
-    return render(request, 'app1/detail_rater.html', {'rater': rater})
+    return render(request, 'app1/detail_rater.html', {'rater': rater,
+                                                      'ratings_list': ratings_list})

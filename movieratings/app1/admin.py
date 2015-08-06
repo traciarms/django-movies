@@ -6,7 +6,7 @@ from .models import Movie
 from .models import Rating
 
 class RaterAdmin(admin.ModelAdmin):
-    list_display = ('gender','age','occupation','zip_code')
+    list_display = ('gender','age','user','occupation','zip_code')
     list_filter = ['gender', 'occupation']
 
 class MovieAdmin(admin.ModelAdmin):

@@ -37,6 +37,9 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_extensions',
+    'debug_toolbar',
+    'bootstrap3',
     'app1',
 )
 
@@ -101,3 +104,19 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATICFILES_DIR = (
+    os.path.join(BASE_DIR, 'global'),
+)
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+BOOTSTRAP3 = {
+    'jquery_url': '/static/jquery-2.1.4.min.js',
+
+    'base_url': '/static/bootstrap',
+
+    'theme_url': '/static/bootstrap/css/sandstone.css',
+
+    'include_jquery': True,
+}

@@ -105,18 +105,22 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATICFILES_DIR = (
-    os.path.join(BASE_DIR, 'global'),
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "global"),
 )
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+#STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 BOOTSTRAP3 = {
+    # The URL to the jQuery JavaScript file
     'jquery_url': '/static/jquery-2.1.4.min.js',
 
-    'base_url': '/static/bootstrap',
+    # The Bootstrap base URL
+    'base_url': '/static/bootstrap/',
 
+    # The complete URL to the Bootstrap CSS file (None means no theme)
     'theme_url': '/static/bootstrap/css/sandstone.css',
 
+    # Include jQuery with Bootstrap JavaScript (affects django-bootstrap3 template tags)
     'include_jquery': True,
 }

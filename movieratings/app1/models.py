@@ -4,8 +4,8 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.db.models import Avg
 
-# Create your models here.
 
+# Create your models here.
 class Rater(models.Model):
     gender = models.CharField(max_length=1)
     age = models.IntegerField()
@@ -48,7 +48,7 @@ class Rating(models.Model):
     ratings = models.IntegerField(validators=[MinValueValidator(1),
                                               MaxValueValidator(5)])
     timestamp = models.IntegerField(default=0)
-    new_stamp = datetime.datetime.now()
+    new_stamp = models.DateTimeField()
 
     @property
     def was_published_recently(self):

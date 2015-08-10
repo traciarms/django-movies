@@ -5,4 +5,11 @@ from app1.models import Rating
 class RatingForm(ModelForm):
     class Meta:
         model = Rating
-        fields = ('ratings', )#'movie', 'ratings', 'timestamp', 'new_stamp')
+        fields = ('ratings', )
+
+
+
+# class UpdateRatingForm(ModelForm):
+#     class Meta:
+#         model = Rating
+#         fields = ('ratings', )

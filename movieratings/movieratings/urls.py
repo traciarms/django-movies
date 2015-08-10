@@ -18,8 +18,9 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^logout/', 'django.contrib.auth.views.logout',
-        {'next_page':"/app1/"}, name='logout'),
+        {'next_page':"/app1/list_movies"}, name='logout'),
     url('^', include('django.contrib.auth.urls')),
     url(r'^app1/', include('app1.urls')),
+    url(r'^accounts/profile/', 'app1.views.account_profile', name="account_profile"),
     url(r'^admin/', include(admin.site.urls)),
 ]

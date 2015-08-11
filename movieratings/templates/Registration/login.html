@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block title %}Login:{% endblock %}
+
+{% block content %}
+
+Please Login:
+
+<form method="post" action="{% url 'login' %}">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}">
+    {{ form.as_p }}
+    <input type="submit" value="Login">
+</form>
+{% endblock %}

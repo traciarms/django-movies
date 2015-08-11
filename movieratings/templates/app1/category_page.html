@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block title %}List of Top 20 Rated {{ select_category }}Movies:{% endblock %}
+
+{% block content %}
+    {% csrf_token %}
+    <h1>Here is the list of the top 20 rated <br><b>{{ select_category }}</b>
+        movies and their avg ratings.</h1>
+    <ol>
+        <h4>Filter by Genre:</h4>
+        {% for each in category_list %}
+            <a href="{% url 'category_page' each.category %}">
+                &nbsp;{{ each.category }}&nbsp;|</a>
+        {% endfor %}<br><br>
+        {% for movie in avg_rating %}
+           <div class="alert-danger"><li>Movie:
+                <a href="{% url 'detail_movie' movie.id %}">
+                     {{ movie.title }}
+                </a></li>
+           </div>
+                <p> Avg Rating:  {{ movie.average }} </p>
+       {% endfor %}
+    </ol>
+
+{% endblock %}

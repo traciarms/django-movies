@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block title %}List of Most Rated Movies:{% endblock %}
+
+{% block content %}
+    {% csrf_token %}
+    <h1>Here is the list of the 20 most rated movies:</h1>
+        <div align="center">
+            <b><a href="{% url 'list_movies' %}">
+                Go back to the full list</a>
+            </b>
+        </div><br>
+    <ul>
+        {% for movie in movie_list %}
+           <li><div class="alert-danger">Movie:
+           <a href="{% url 'detail_movie' movie.id %}">
+                {{ movie.title }}</a></div>
+
+                There are {{ movie.count }} users who have rated this movie:
+           </li>
+       {% endfor %}
+    </ul>
+    {% if is_paginated %}
+    <p>
+        {% if page_obj.has_previous %}
+            <a href="{% url 'most_ratings' %}?page={{ page_obj.previous_page_number }}"><< Prev</a>
+        {% endif %}
+        {{ page_obj }}
+        {% if page_obj.has_next %}
+            <a href="{% url 'most_ratings' %}?page={{ page_obj.next_page_number }}">Next >></a>
+        {% endif %}
+    </p>
+    {% endif %}
+
+{% endblock %}

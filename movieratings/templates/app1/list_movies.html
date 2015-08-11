@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block title %}List of All Movies:{% endblock %}
+
+{% block content %}
+    {% csrf_token %}
+    <h1>Here is the list of ALL Movies</h1>
+    <h4 align="center"><a href="{% url 'avg_rating' None %}">
+        Click here to see the top 20 highest rated movies
+    </a></h4>
+    <h4 align="center"><a href="{% url 'most_ratings'  %}">
+        Click here to see the top 20 most rated movies
+    </a></h4>
+    <ul>
+
+       {% for movie in movie_list %}
+            <li><a href="{% url 'detail_movie' movie.id %}">{{ movie.title }}</a></li>
+
+       {% endfor %}
+    </ul>
+    {% if is_paginated %}
+    <p>
+        {% if page_obj.has_previous %}
+            <a href="{% url 'list_movies' %}?page={{ page_obj.previous_page_number }}"><< Prev</a>
+        {% endif %}
+        {{ page_obj }}
+        {% if page_obj.has_next %}
+            <a href="{% url 'list_movies' %}?page={{ page_obj.next_page_number }}">Next >></a>
+        {% endif %}
+    </p>
+    {% endif %}
+{% endblock %}

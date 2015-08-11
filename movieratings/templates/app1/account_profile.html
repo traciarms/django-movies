@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+    {% csrf_token %}
+    <h1>Hi, welcome to your user account:</h1>
+    <h4><a href="{% url 'avg_rating' None %}">
+        Click here to see the top 20 rated movies
+    </a></h4>
+    <h4><a href="{% url 'most_ratings'  %}">
+        Click here to see the 20 most rated movies
+    </a></h4><br>
+        <h4>Here is a list of the movies that you have reviewed:</h4>
+    {% for rating in ratings_list %}
+                <p class="tab">
+                    <div class="alert-warning"> Movie: <b>{{ rating.movie.title }}</b></div>
+                    You gave this movie a rating of:  {{ rating.ratings }}
+
+        <style type="text/css">
+        <!--
+            .tab { margin-left: 40px; }
+            .tab2 { margin-left: 80px; }
+        -->
+        </style>
+
+            <p class="tab2">
+                <a href="{% url 'change_rating' rating.id %}">
+                    Change this rating</a><br>
+                <a href="{% url 'delete_rating' rating.id %}">
+                    Delete this rating</a>
+            </p>
+
+    {% endfor %}
+
+{% endblock %}

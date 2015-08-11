@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block title %}Detailed Rater Info:{% endblock %}
+
+{% block content %}
+    <h1>Rater Detail</h1>
+    <p>Gender: {{ rater.gender }}</p>
+    <p>Age: {{ rater.age }}</p>
+    <p>Occupation: {{ rater.occupation }}</p>
+    <p>Zip code: {{ rater.zip_code }} </p>
+    <h3>Here's a list of all the movies rated by this user:</h3>
+    {% for rating in ratings_list %}
+            <li>
+                <p>
+                    Movie:
+                        <a href="{% url 'detail_movie' rating.movie_id %}">
+                            {{ rating.movie.title }}</a>
+                                &nbsp&nbsp
+                    Rating:  {{ rating.ratings }}
+                </p>
+            </li>
+    {% endfor %}
+{% endblock %}

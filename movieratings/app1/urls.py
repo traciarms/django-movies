@@ -1,11 +1,16 @@
 from django.conf.urls import url, include
+from app1.views import MovieList, MostRatings
 
 urlpatterns = [
-    url(r'list_movies/', 'app1.views.list_movies', name='list_movies'),
+    # url(r'list_movies/', 'app1.views.list_movies', name='list_movies'),
+    url(r'^list_movies/', MovieList.as_view(), name='list_movies'),
+    url(r'^most_ratings/', MostRatings.as_view(), name='most_ratings'),
+
     url(r'create_rating/(?P<movie_id>[0-9]+)/', 'app1.views.create_rating',
         name='create_rating'),
-    url(r'avg_rating/', 'app1.views.avg_rating', name='avg_rating'),
-    url(r'most_ratings/', 'app1.views.most_ratings', name='most_ratings'),
+
+    url(r'avg_rating/(?P<select_category>[A-z]+)', 'app1.views.avg_rating', name='avg_rating'),
+    # url(r'most_ratings/', 'app1.views.most_ratings', name='most_ratings'),
     url(r'detail_movie/(?P<movie_id>[0-9]+)/', 'app1.views.detail_movie',
         name="detail_movie"),
     url(r'^user/(?P<rater_id>[0-9]+)/', 'app1.views.detail_rater',

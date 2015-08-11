@@ -10,7 +10,7 @@ class Rater(models.Model):
     gender = models.CharField(max_length=1)
     age = models.IntegerField()
     occupation = models.IntegerField()
-    zip_code = models.CharField(max_length=5)
+    zip_code = models.CharField(max_length=10)
     user = models.OneToOneField(User, null=True)
 
     def has_rated_movie(self, movie_id):
@@ -40,6 +40,11 @@ class Movie(models.Model):
 
     def __str__(self):
         return 'title: {} genre: {}'.format(self.title, self.genre)
+
+
+class Category(models.Model):
+    category = models.CharField(max_length=150)
+    movie = models.ManyToManyField(Movie)
 
 
 class Rating(models.Model):

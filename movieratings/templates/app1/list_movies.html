@@ -6,7 +6,7 @@
 {% block content %}
     {% csrf_token %}
     <h1>Here is the list of ALL Movies</h1>
-    <h4 align="center"><a href="{% url 'avg_rating' None %}">
+    <h4 align="center"><a href="{% url 'avg_rating' %}?select_category={{ 'None' }}">
         Click here to see the top 20 highest rated movies
     </a></h4>
     <h4 align="center"><a href="{% url 'most_ratings'  %}">

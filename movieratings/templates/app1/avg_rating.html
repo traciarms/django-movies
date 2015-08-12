@@ -9,7 +9,7 @@
         rated movies and their avg ratings.</h1>
         <div align="center">
             <b><a href="{% url 'list_movies' %}">
-                Go back to the full list</a>
+                List ALL movies:</a>
             </b>
         </div><br>
     <ol>
@@ -20,16 +20,27 @@
         {% endif %}
 
         {% for each in category_list %}
-            <a href="{% url 'avg_rating' each.category %}">
+            <a href="{% url 'avg_rating' %}?select_category={{ each.category }}">
                 &nbsp;{{ each.category }}&nbsp;|</a>
         {% endfor %}
-        <a href="{% url 'avg_rating' None %}">No Filter</a><br><br>
-        {% for movie in avg_rating %}
+        <a href="{% url 'avg_rating' %}?select_category={{ None }}">No Filter</a><br><br>
+        {% for movie in movie_list %}
            <div class="alert-danger"><li>Movie:
            <a href="{% url 'detail_movie' movie.id %}">
                 {{ movie.title }}</a></li></div>
                 <p> Avg Rating:  {{ movie.average }}</p>
        {% endfor %}
     </ol>
+    {% if is_paginated %}
+    <p>
+        {% if page_obj.has_previous %}
+            <a href="{% url 'list_movies' %}?page={{ page_obj.previous_page_number }}"><< Prev</a>
+        {% endif %}
+        {{ page_obj }}
+        {% if page_obj.has_next %}
+            <a href="{% url 'list_movies' %}?page={{ page_obj.next_page_number }}">Next >></a>
+        {% endif %}
+    </p>
+    {% endif %}
 
 {% endblock %}

@@ -7,26 +7,31 @@
     {% csrf_token %}
     <h1>Movie Detail</h1>
     <p><h3>Title:<b> {{ movie.title }}</b> </h3>
-    <p>This movie has an Average Rating of: {{ avg_rating }}</p>
+    <p>
+        This movie has an Average Rating of:&nbsp;&nbsp;
+        {{ movie.get_avg_rating.ratings__avg }}
+    </p>
     {% if user.is_authenticated %}
         {% if not rated %}
-            <a href="{% url 'create_rating' movie.id %}">Click here to rate this movie</a>
+            <a href="{% url 'create_rating' movie.id %}">
+                Click here to rate this movie</a>
 
         {% endif %}
     {% else %}
-        <a href="{% url 'create_rating' movie.id %}">Click here to login and rate this movie</a>
+        <a href="{% url 'create_rating' movie.id %}">
+            Click here to login and rate this movie</a>
     {% endif %}
     <br>
     <h4>List of users who have rated this movie:</h4>
     <ul>
-        {% for each in user_list %}
+        {% for movie in movie.rating_set.all %}
             <li>
                 <p>
-                 <a href="{% url 'detail_rater' each.rater_id %}">
-                  Rater Id: {{ each.rater_id }}</a>&nbsp;&nbsp;&nbsp;&nbsp;
-                  Rating:  {{ each.ratings }}&nbsp;&nbsp;&nbsp;&nbsp;
-                    {% if each.new_stamp != null %}
-                        Rating date/time:  {{ each.new_stamp }}
+                 <a href="{% url 'detail_rater' movie.rater_id %}">
+                  Rater Id: {{ movie.rater_id }}</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                  Rating:  {{ movie.ratings }}&nbsp;&nbsp;&nbsp;&nbsp;
+                    {% if movie.new_stamp != null %}
+                        Rating date/time:  {{ movie.new_stamp }}
                     {% endif %}
                 </p>
             </li>

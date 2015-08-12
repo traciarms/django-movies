@@ -1,14 +1,15 @@
 import datetime
 from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.db.models import Avg, Count
 from django.forms import Form
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 
 
 # Create your views here.
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, CreateView, DeleteView, \
+    UpdateView
 from app1.forms import RatingForm
 from app1.models import Movie, Rater, Rating, Category
 
@@ -28,60 +29,57 @@ class MostRatings(ListView):
     paginate_by = 10
 
 
-# class MovieDetail(DetailView):
-#     model = Movie
-#     template_name = "app1/detail_movie.html"
-#     pk_url_kwarg = 'movie_id'
-#     avg_rating = movie.get_avg_rating().get('ratings__avg')
-#     user_list = movie.get_user_list()
-#     if request.user.is_authenticated():
-#         rated = request.user.rater.has_rated_movie(movie_id)
-#     else:
-#         rated = False
-#     paginate_by = 10
-#
-#     def get_context_data(self, **kwargs):
-#         context = super(MovieList, self).get_context_data(**kwargs)
-#         context['rated'] =
-#         return context
+class AccountProfile(ListView):
+    model = Rating
+    template_name = "app1/account_profile.html"
+    paginate_by = 10
 
-def detail_movie(request, movie_id):
-    movie = Movie.objects.get(pk=movie_id)
-    avg_rating = movie.get_avg_rating().get('ratings__avg')
-    user_list = movie.get_user_list()
-    if request.user.is_authenticated():
-        rated = request.user.rater.has_rated_movie(movie_id)
-    else:
-        rated = False
-
-    return render(request, 'app1/detail_movie.html', {'movie': movie,
-                                                      'avg_rating': avg_rating,
-                                                      'user_list': user_list,
-                                                      'rated': rated})
-# class AvgRating(ListView):
-#     model = Movie
-#     template_name = "app1/avg_rating.html"
-#     # pk_url_kwarg = 'select_category'
-#     queryset = Movie.objects.exclude(rating=None)
-#     # if select_category != 'None':
-#     #     queryset = queryset.filter(category__category__icontains=select_category)
-#     queryset = queryset.annotate(
-#         average=Avg('rating__ratings')).order_by('-average')[:20]
-#     paginate_by = 10
+    def get_queryset(self):
+        queryset = Rater.objects.get(
+            pk=self.request.user.rater.id).get_rating_list()
+        return queryset
 
 
-def avg_rating(request, select_category=None):
-    category_list = Category.objects.all()
-    movie_list = Movie.objects.exclude(rating=None)
-    if select_category != 'None':
-        movie_list = movie_list.filter(category__category__icontains=select_category)
-    avg_rating = movie_list.annotate(
-        average=Avg('rating__ratings')).order_by('-average')[:20]
+class DetailRater(DetailView):
+    model = Rater
+    pk_url_kwarg = 'rater_id'
+    template_name = 'app1/detail_rater.html'
 
-    return render(request, 'app1/avg_rating.html',
-                  {'avg_rating': avg_rating,
-                   'category_list': category_list,
-                   'select_category': select_category})
+
+class DetailMovie(DetailView):
+    model = Movie
+    pk_url_kwarg = 'movie_id'
+    template_name = 'app1/detail_movie.html'
+
+    def get_context_data(self, **kwargs):
+        movie = self.object
+        context = super(DetailMovie, self).get_context_data(**kwargs)
+        context['rated'] = self.request.user.rater.has_rated_movie(movie.id)
+        return context
+
+
+class AvgRating(ListView):
+    model = Movie
+    template_name = "app1/avg_rating.html"
+    paginate_by = 7
+
+    def get_queryset(self):
+        select_cat = self.request.GET.get("select_category", None)
+        queryset = Movie.objects.exclude(rating=None)
+        if select_cat != 'None':
+            queryset = queryset.filter(
+                category__category__icontains=select_cat)
+        queryset = queryset.annotate(
+            average=Avg('rating__ratings')).order_by('-average')[:20]
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super(AvgRating, self).get_context_data(**kwargs)
+        context['category_list'] = Category.objects.all()
+        context['select_category'] = \
+            self.request.GET.get("select_category", None)
+        return context
 
 
 @login_required(login_url='/login')
@@ -103,57 +101,48 @@ def change_rating(request, rating_id):
 
     else:
         form = RatingForm()
-    return render(request, 'app1/change_rating.html', {'form': form,
+    return render(request, 'app1/update_rating.html', {'form': form,
                                                        'rating_id': rating_id})
 
 
-@login_required(login_url='/login')
-def delete_rating(request, rating_id):
+class UpdateRating(UpdateView):
+    model = Rating
+    fields = ['ratings']
+    pk_url_kwarg = 'rating_id'
+    template_name = "app1/update_rating.html"
 
-    rating = Rating.objects.get(pk=rating_id)
-    if request.method == 'POST':
-        if "delete" in request.POST:
-            rating.delete()
-        return HttpResponseRedirect(reverse('account_profile'))
-    else:
-        form = Form()
-
-    return render(request, 'app1/delete_rating.html', {'form': form,
-                                                       'rating_id': rating_id})
+    def get_success_url(self):
+        return reverse('account_profile')
 
 
-@login_required(login_url='/login')
-def account_profile(request):
-    rater = Rater.objects.get(pk=request.user.rater.id)
-    ratings_list = rater.get_rating_list()
-    return render(request, 'app1/account_profile.html',
-                  {'ratings_list': ratings_list})
+class DeleteRating(DeleteView):
+    model = Rating
+    pk_url_kwarg = 'rating_id'
+    template_name = "app1/delete_rating.html"
+
+    def get_success_url(self):
+        return reverse('account_profile')
 
 
-@login_required(login_url='/login')
-def create_rating(request, movie_id):
-    if request.method == 'POST':
-        form = RatingForm(request.POST)
+class CreateRating(CreateView):
+    model = Rating
+    fields = ('ratings',)
+    success_url = reverse_lazy('detail_movie')
+    template_name = "app1/create_rating.html"
 
-        if form.is_valid():
-            rating = form.save(commit=False)
-            rating.movie_id = movie_id
-            rating.rater_id = request.user.rater.id
-            rating.new_stamp = datetime.datetime.now()
-            rating.save()
+    def get_success_url(self):
+        return reverse('detail_movie',
+                       kwargs={'movie_id': self.kwargs.get('movie_id', None)})
 
-            return HttpResponseRedirect(reverse('detail_movie',
-                                                args=[movie_id]))
+    def get_context_data(self, **kwargs):
+        context = super(CreateRating, self).get_context_data(**kwargs)
+        context['movie_id'] = self.kwargs.get('movie_id', None)
+        return context
 
-    else:
-        form = RatingForm()
-    return render(request, 'app1/create_rating.html', {'form': form,
-                                                       'movie_id': movie_id})
+    def form_valid(self, form):
+        form.instance.rater_id = self.request.user.rater.id
+        form.instance.movie_id = self.kwargs.get('movie_id', None)
+        form.instance.rating = form.cleaned_data.get('rating', None)
+        form.instance.new_stamp = datetime.datetime.now()
+        return super(CreateRating, self).form_valid(form)
 
-
-def detail_rater(request, rater_id):
-    rater = Rater.objects.get(pk=rater_id)
-    ratings_list = rater.get_rating_list()
-
-    return render(request, 'app1/detail_rater.html',
-                  {'rater': rater, 'ratings_list': ratings_list})
